@@ -1,0 +1,421 @@
+{
+  "meta": {
+    "purpose": "Seed a NEW ChatGPT session with full context about the AION Analytics project so the new session can continue upgrades without re-discovering everything from scratch.",
+    "how_to_use": [
+      "Save this text as a file, e.g. aion_context.json.",
+      "Start a new ChatGPT conversation.",
+      "Say something like: 'Please load this JSON as context for my AION Analytics project. I’ll upload it now.'",
+      "Upload this JSON file, then start re-uploading your .py files (see `files_to_reupload` below)."
+    ]
+  },
+
+  "project_identity": {
+    "name": "AION Analytics",
+    "high_level_goal": "Build an autonomous, multi-layer trading intelligence system that blends fast AI signals (ML models) with richer human-like context and regime awareness to bridge the gap between a pure bot and a human day trader.",
+    "philosophy": {
+      "metaphor": "Water filtration system: multiple filters (data layers, features, models, policy engines, regimes, news, macro) refine noisy raw market data into a purified, actionable insight stream.",
+      "core_idea": [
+        "Not just a raw prediction bot.",
+        "Captures both quant signals and 'intangible' human trader behavior (context, regime, sentiment, momentum, risk feel).",
+        "Learns continuously from live outcomes, model drift, and hit-ratios."
+      ]
+    },
+    "key_objectives": [
+      "Fully autonomous EOD + intraday pipelines (nightly jobs + dt_backend).",
+      "Stable, resilient backfills and rolling caches with self-heal behaviors.",
+      "Context-aware policy engine that adapts to market regimes and per-sector conditions.",
+      "Multi-model stack: LightGBM, LSTM, Transformer, and a learned hybrid ensemble.",
+      "Neat separation between backend (longer-term + dashboard) and dt_backend (intraday / day-trading)."
+    ]
+  },
+
+  "current_architecture": {
+    "top_level_folders": [
+      "backend/  – main long-term / dashboard / API service backend.",
+      "dt_backend/  – day trading / intraday engine stack.",
+      "utils/  – generic utilities (logging, progress bar, json helpers, time utils).",
+      "frontend/  – Next.js UI, currently 'unchanged UI — just rewired later'.",
+      "data / ml_data / ml_data_dt etc. (implied by config paths).",
+      ".env / requirements.txt / README.md / feature_schema.json."
+    ],
+    "backend_substructure": {
+      "routers": [
+        "live_prices_router.py",
+        "insights_router.py",
+        "system_router.py",
+        "__init__.py"
+      ],
+      "services": [
+        "news_fetcher.py",
+        "news_fetcher_loop.py",
+        "fundamentals_fetcher.py",
+        "macro_fetcher.py",
+        "insights_builder.py",
+        "prediction_logger.py",
+        "scheduler_runner.py",
+        "backfill_history.py",
+        "nightly_job.py",
+        "__init__.py"
+      ],
+      "core": [
+        "config.py          – main PATHS, env config, locations for stock_cache, ml_data, logs, etc.",
+        "data_pipeline.py   – long-term stock data ingest + rolling management.",
+        "context_state.py   – builds 'human-like' context per symbol + global market_state.json.",
+        "regime_detector.py – bull/bear/sideways regime detection for market & sector.",
+        "policy_engine.py   – applies strategy/policy rules to model outputs + context.",
+        "ai_model.py        – long-term models for backend (separate from dt_backend).",
+        "continuous_learning.py – long-term continuous learning stack.",
+        "__init__.py"
+      ],
+      "cache": [
+        "stock/",
+        "news/",
+        "fundamentals/",
+        "ml/",
+        "dashboard/",
+        "__init__.py"
+      ],
+      "top_level_files": [
+        "backend_service.py – core FastAPI + service orchestrator (starts jobs, heartbeats).",
+        "scheduler_config.py – schedules jobs (nightly, 6h, etc.).",
+        "run_backend.py – entry point to launch FastAPI / backend service.",
+        "__init__.py"
+      ]
+    },
+    "dt_backend_substructure": {
+      "core": [
+        "config_dt.py         – DT_PATHS, intraday-specific paths and config.",
+        "data_pipeline_dt.py  – intraday bar ingestion, rolling_intraday cache maintenance.",
+        "context_state_dt.py  – intraday context features (similar to backend/context_state).",
+        "regime_detector_dt.py– intraday / shorter-horizon regime detection.",
+        "policy_engine_dt.py  – intraday trade policy layer (position sizing, entries/exits).",
+        "__init__.py"
+      ],
+      "models": {
+        "folder": "dt_backend/models/",
+        "baseline": [
+          "lightgbm_intraday/  – LightGBM model + metadata (model.txt, feature_map.json, label_map.json)."
+        ],
+        "extended": [
+          "lstm_intraday/       – sequence model with LSTMIntradayModel + config.json + feature_map.json + label_map.json + model.pt.",
+          "transformer_intraday/ – TransformerIntradayModel + config.json + feature_map.json + label_map.json + model.pt.",
+          "ensemble/             – hybrid ensemble (IntradayHybridEnsemble + EnsembleConfig + meta-ensemble blending logic).",
+          "__init__.py          – central registry re-exporting all the above."
+        ],
+        "notes": [
+          "These modules were fully designed in this session (full code provided in chat).",
+          "Physical .zip creation inside the sandbox failed; the code must be pasted manually into the new session’s repo."
+        ]
+      },
+      "engines": [
+        "indicators.py          – TA indicators, price/volume features (upgrade planned).",
+        "feature_engineering.py – builds ML-ready feature sets from raw bars and context (upgrade planned).",
+        "backtesting_engine.py  – intraday backtesting runner (planned/partially implemented).",
+        "broker_api.py          – abstraction over live broker / paper API (planned).",
+        "trade_executor.py      – executes signals into orders (planned).",
+        "__init__.py"
+      ],
+      "jobs": [
+        "backfill_intraday_full.py – large backfill job for intraday history.",
+        "daytrading_job.py         – main intraday cycle / loop job.",
+        "rank_fetch_scheduler.py   – handles StockAnalysis rank seeding + historical backfills (already debugged in older sessions).",
+        "__init__.py"
+      ],
+      "ml": [
+        "__init__.py",
+        "ml_data_builder_intraday.py      – builds intraday ML dataset.",
+        "train_lightgbm_intraday.py       – trains fast 3-class LGBM classifier.",
+        "ai_model_intraday.py             – runtime inference brain (to be upgraded for 4-model stack).",
+        "signals_rank_builder.py          – builds ranking signals/boards from predictions.",
+        "continuous_learning_intraday.py  – continuous learning / drift monitoring / online retraining (to be extended for meta-ensemble)."
+      ],
+      "signals": [
+        "signals/intraday/boards/",
+        "signals/intraday/predictions/",
+        "signals/intraday/ranks/",
+        "signals/longterm/predictions/",
+        "signals/longterm/boards/",
+        "__init__.py"
+      ],
+      "rolling": [
+        "rolling/intraday/rolling_intraday.json.gz   – capped rolling intraday cache.",
+        "rolling/longterm/",
+        "__init__.py"
+      ],
+      "bars": [
+        "bars/intraday/",
+        "bars/daily/",
+        "__init__.py"
+      ],
+      "universe": [
+        "universe/exchanges.json",
+        "universe/symbol_universe.json",
+        "__init__.py"
+      ],
+      "historical_replay": [
+        "historical_replay/raw/",
+        "historical_replay/processed/",
+        "historical_replay/metadata.json",
+        "__init__.py"
+      ],
+      "__init__": "dt_backend/__init__.py exists."
+    },
+    "utils_substructure": {
+      "files": [
+        "progress_bar.py  – CLI progress helper used by many jobs.",
+        "logger.py        – generic logger (and dt_logger wrappers).",
+        "json_tools.py    – safe JSON read/write helpers.",
+        "time_utils.py    – timezone-aware time/date utilities.",
+        "__init__.py"
+      ]
+    }
+  },
+
+  "deep_dive_findings_on_Aion_Analytics_main_zip": {
+    "note": "I cannot re-open the zip in this specific broken sandbox, but I retain the high-level conclusions we formed earlier from the deep scan of Aion_Analytics-main.zip.",
+    "issues_found": [
+      "Multiple old / redundant paths and legacy modules (pre-map refactor).",
+      "Some nightly jobs and schedulers referenced outdated file locations and module names.",
+      "Rank/backfill / nightly interactions sometimes led to 'no symbols / no data' scenarios if rolling cache was empty.",
+      "Some modules assumed the presence of JSON or parquet files that might not exist yet, requiring more defensive coding.",
+      "dt_backend versus backend boundaries were a bit fuzzy; we clarified their roles and separated concerns."
+    ],
+    "upgrades_planned_and/or_started": [
+      "Refactor file structure to the clean map shown above.",
+      "Normalize configs through backend/core/config.py and dt_backend/core/config_dt.py.",
+      "Make nightly jobs idempotent and resilient (heal rolling, no crash if zero data).",
+      "Add context_state and regime_detector layers to behave more like a human trader.",
+      "Upgrade dt_backend models to include LSTM, Transformer, and a hybrid ensemble.",
+      "Introduce continuous learning components that use actual hit ratios and drift metrics, rather than naive retraining.",
+      "Align naming conventions and feature naming (e.g. rsi → rsi_14)."
+    ],
+    "philosophy_anchor": "The scan reinforced that the direction is: layered intelligence (data → features → models → ensemble → policy → execution), with each layer aware of context and regime."
+  },
+
+  "model_stack_decisions": {
+    "intraday_label_space": [
+      "3-class classification: SELL / HOLD / BUY.",
+      "Label ordering must be consistent: [\"SELL\", \"HOLD\", \"BUY\"].",
+      "Label maps stored as label_map.json for each model."
+    ],
+    "option_selected": "Option D (Hybrid + Meta-learner architecture)",
+    "details": {
+      "LightGBM": {
+        "role": "Primary fast learner, retrained daily (or frequently).",
+        "strengths": "Handles tabular, cross-sectional features; fast training; good baseline.",
+        "artefacts": "model.txt, feature_map.json, label_map.json under DT_PATHS['dtmodels']/intraday/lightgbm.",
+        "training_script": "dt_backend/ml/train_lightgbm_intraday.py (already present, needs slight upgrade to save feature_map/label_map consistently)."
+      },
+      "LSTM": {
+        "role": "Sequence model that consumes intraday time windows (N × T × F).",
+        "goal": "Capture short-term temporal patterns and local momentum like a human watching the tape.",
+        "artefacts": "config.json, model.pt, feature_map.json, label_map.json under DT_PATHS['dtmodels']/intraday/lstm.",
+        "implementation": "LSTMIntradayModel, LSTMConfig, lstm_predict_proba, lstm_predict_class in dt_backend/models/lstm_intraday/__init__.py (code given in this session)."
+      },
+      "Transformer": {
+        "role": "Sequence model with more powerful context representation (attention over the window).",
+        "goal": "Capture longer-range interactions, regime shifts within the window, and shape of volatility.",
+        "artefacts": "config.json, model.pt, feature_map.json, label_map.json under DT_PATHS['dtmodels']/intraday/transformer.",
+        "implementation": "TransformerIntradayModel, TransformerConfig, transformer_predict_proba, transformer_predict_class in dt_backend/models/transformer_intraday/__init__.py (code given in this session)."
+      },
+      "Hybrid_Ensemble": {
+        "role": "Blend LightGBM, LSTM, and Transformer into one final probability per symbol.",
+        "mechanism": [
+          "Take per-model probabilities (p_lgb, p_lstm, p_tr).",
+          "Convert to logits with numerical safety.",
+          "Blend logits with weights (w_lgb, w_lstm, w_transf).",
+          "Softmax back to probabilities.",
+          "Use label ordering derived from LightGBM meta when available."
+        ],
+        "config": "EnsembleConfig(w_lgb, w_lstm, w_transf).",
+        "meta_learning": [
+          "continuous_learning_intraday.py can compute recent model-level accuracies (acc_lgb, acc_lstm, acc_transf).",
+          "Use those to update EnsembleConfig and persist to meta_ensemble.json under dtmodels/intraday/ensemble.",
+          "Next time IntradayHybridEnsemble loads, it uses updated weights (this is the 'Option D' meta-learner behavior)."
+        ],
+        "implementation": "IntradayHybridEnsemble, ensemble_predict_proba, ensemble_predict_class in dt_backend/models/ensemble/intraday_hybrid_ensemble.py (code given in this session)."
+      }
+    }
+  },
+
+  "ml_layer_plan_dt_backend": {
+    "folder": "dt_backend/ml",
+    "current_files_uploaded_in_this_session": [
+      "__init__.py",
+      "ai_model_intraday.py",
+      "continuous_learning_intraday.py",
+      "ml_data_builder_intraday.py",
+      "signals_rank_builder.py",
+      "train_lightgbm_intraday.py"
+    ],
+    "intended_roles": {
+      "ml_data_builder_intraday.py": "Builds feature sets (tabular and ideally sequence-ready) from intraday bars + context. It should eventually output both per-row tabular features and sequences suitable for LSTM/Transformer.",
+      "train_lightgbm_intraday.py": "Train LightGBM intraday model; save model.txt, feature_map.json, label_map.json into dt models folder.",
+      "ai_model_intraday.py": "Runtime model loader and scorer. Should load all models (LGBM, LSTM, Transformer, Ensemble) and provide a simple score_intraday_batch() function.",
+      "continuous_learning_intraday.py": "Monitor drift, hit-ratio, and run periodic retraining / meta-ensemble updating. For Option D, this is where the meta-learner for EnsembleConfig lives.",
+      "signals_rank_builder.py": "Take predictions and convert them into rankings, boards, and signals; can also compute per-horizon insights.",
+      "__init__.py": "Expose high-level entrypoints into the intraday ML module."
+    },
+    "planned_upgrades_option_d": [
+      "Extend ai_model_intraday.py to load all models via dt_backend.models and to prefer IntradayHybridEnsemble when available.",
+      "Add meta-ensemble logic into continuous_learning_intraday.py: compute per-model recent accuracy and adjust EnsembleConfig in meta_ensemble.json.",
+      "Keep train_lightgbm_intraday.py as the baseline trainer but ensure consistent artefacts (feature_map.json, label_map.json).",
+      "Optionally add train_lstm_intraday.py and train_transformer_intraday.py to automate training for those models on weekly cadence (not yet fully written here, but architected)."
+    ]
+  },
+
+  "work_done_this_session_summary": {
+    "high_level": [
+      "Confirmed and locked in the new AION folder map and architecture.",
+      "Designed and fully wrote (in chat) the dt_backend models stack: LightGBM, LSTM, Transformer, and hybrid ensemble.",
+      "Discussed and selected Option D meta-ensemble behavior, where ensemble weights are learned from performance.",
+      "Partially designed an upgraded ai_model_intraday.py that uses IntradayHybridEnsemble and falls back gracefully.",
+      "Outlined how continuous_learning_intraday.py can host a simple meta-learner that adjusts ensemble weights from hit-rates.",
+      "Clarified that dt_backend/ml should be the orchestrator for training/inference for intraday models."
+    ],
+    "limitations_in_this_session": [
+      "Python sandbox / file tools became broken: I could not reliably open uploaded files or create working zip archives.",
+      "Any earlier references to created ZIPs or files inside /mnt/data/sandbox are **not reliable** in this session and should be ignored.",
+      "All code promised for models + ensemble was provided as inline text, not as valid downloadable artifacts."
+    ]
+  },
+
+  "files_to_reupload_in_new_session": {
+    "note": "Because I could not actually inspect the contents of your .py files in this broken sandbox, I cannot list every file by exact content. Instead, this is the recommended set of files you should re-upload to the new session so the assistant can fully understand and patch your code.",
+    "prior_zip_uploads": [
+      "Aion_Analytics-main.zip  – full project snapshot (deep scanned previously).",
+      "Aion_Analytics_1.zip     – earlier upgraded subset.",
+      "Aion_Analytics_2.zip     – another upgraded subset.",
+      "Aion_Analytics_Folder_Map.txt – canonical folder map you and I agreed on."
+    ],
+    "critical_source_folders_to_reupload": {
+      "dt_backend_ml": [
+        "dt_backend/ml/__init__.py",
+        "dt_backend/ml/ai_model_intraday.py",
+        "dt_backend/ml/continuous_learning_intraday.py",
+        "dt_backend/ml/ml_data_builder_intraday.py",
+        "dt_backend/ml/signals_rank_builder.py",
+        "dt_backend/ml/train_lightgbm_intraday.py"
+      ],
+      "dt_backend_core": [
+        "dt_backend/core/config_dt.py",
+        "dt_backend/core/data_pipeline_dt.py",
+        "dt_backend/core/context_state_dt.py",
+        "dt_backend/core/regime_detector_dt.py",
+        "dt_backend/core/policy_engine_dt.py",
+        "__init__.py"
+      ],
+      "dt_backend_engines": [
+        "dt_backend/engines/indicators.py",
+        "dt_backend/engines/feature_engineering.py",
+        "dt_backend/engines/backtesting_engine.py",
+        "dt_backend/engines/broker_api.py",
+        "dt_backend/engines/trade_executor.py",
+        "__init__.py"
+      ],
+      "dt_backend_jobs": [
+        "dt_backend/jobs/backfill_intraday_full.py",
+        "dt_backend/jobs/daytrading_job.py",
+        "dt_backend/jobs/rank_fetch_scheduler.py",
+        "__init__.py"
+      ],
+      "dt_backend_models_if_present": [
+        "dt_backend/models/__init__.py",
+        "dt_backend/models/lightgbm_intraday/__init__.py",
+        "dt_backend/models/lightgbm_intraday/feature_map.json",
+        "dt_backend/models/lightgbm_intraday/label_map.json",
+        "dt_backend/models/lightgbm_intraday/model.txt",
+        "dt_backend/models/lstm_intraday/__init__.py",
+        "dt_backend/models/lstm_intraday/config.json",
+        "dt_backend/models/lstm_intraday/feature_map.json",
+        "dt_backend/models/lstm_intraday/label_map.json",
+        "dt_backend/models/lstm_intraday/model.pt",
+        "dt_backend/models/transformer_intraday/__init__.py",
+        "dt_backend/models/transformer_intraday/config.json",
+        "dt_backend/models/transformer_intraday/feature_map.json",
+        "dt_backend/models/transformer_intraday/label_map.json",
+        "dt_backend/models/transformer_intraday/model.pt",
+        "dt_backend/models/ensemble/__init__.py",
+        "dt_backend/models/ensemble/intraday_hybrid_ensemble.py"
+      ],
+      "backend_core": [
+        "backend/core/config.py",
+        "backend/core/data_pipeline.py",
+        "backend/core/context_state.py",
+        "backend/core/regime_detector.py",
+        "backend/core/policy_engine.py",
+        "backend/core/ai_model.py",
+        "backend/core/continuous_learning.py",
+        "__init__.py"
+      ],
+      "backend_services": [
+        "backend/services/news_fetcher.py",
+        "backend/services/news_fetcher_loop.py",
+        "backend/services/fundamentals_fetcher.py",
+        "backend/services/macro_fetcher.py",
+        "backend/services/insights_builder.py",
+        "backend/services/prediction_logger.py",
+        "backend/services/scheduler_runner.py",
+        "backend/services/backfill_history.py",
+        "backend/services/nightly_job.py",
+        "__init__.py"
+      ],
+      "backend_routers": [
+        "backend/routers/live_prices_router.py",
+        "backend/routers/insights_router.py",
+        "backend/routers/system_router.py",
+        "__init__.py"
+      ],
+      "backend_top_level": [
+        "backend/backend_service.py",
+        "backend/scheduler_config.py",
+        "backend/run_backend.py",
+        "backend/__init__.py"
+      ],
+      "utils": [
+        "utils/progress_bar.py",
+        "utils/logger.py",
+        "utils/json_tools.py",
+        "utils/time_utils.py",
+        "utils/__init__.py"
+      ]
+    },
+    "priority_order_for_reupload": [
+      "1. Aion_Analytics_Folder_Map.txt (to re-establish structure).",
+      "2. dt_backend/ml/*.py (since we are actively upgrading these right now).",
+      "3. dt_backend/models/* (if you’ve already created them; otherwise, we’ll rebuild in the new session).",
+      "4. dt_backend/core/*.py and dt_backend/engines/*.py when we move to engine upgrades.",
+      "5. backend/core and backend/services files when we resume backend-wide upgrades."
+    ]
+  },
+
+  "direction_and_next_steps_for_new_session": {
+    "what_to_tell_the_new_session_up_front": [
+      "This project is called AION Analytics.",
+      "We already agreed on a precise folder map (you’ll upload Aion_Analytics_Folder_Map.txt).",
+      "We chose **Option D** for the intraday model stack: LightGBM + LSTM + Transformer + a meta-learned hybrid ensemble.",
+      "We already designed dt_backend/models modules (lightgbm_intraday, lstm_intraday, transformer_intraday, ensemble).",
+      "We now want to wire dt_backend/ml to properly train and use those models, and then upgrade dt_backend/engines and the rest according to the map."
+    ],
+    "initial_tasks_for_the_new_session": [
+      "1. Read Aion_Analytics_Folder_Map.txt and confirm the map matches the assistant’s understanding.",
+      "2. Read and review dt_backend/ml/*.py files that you re-upload, especially:",
+      "   - ai_model_intraday.py",
+      "   - continuous_learning_intraday.py",
+      "   - ml_data_builder_intraday.py",
+      "   - train_lightgbm_intraday.py",
+      "3. Integrate the Option D model stack:",
+      "   - Ensure ai_model_intraday.py loads LGBM, LSTM, Transformer, and uses IntradayHybridEnsemble when available.",
+      "   - Ensure continuous_learning_intraday.py has a meta-ensemble update step that updates EnsembleConfig from performance metrics.",
+      "   - Ensure train_lightgbm_intraday.py writes consistent artefacts (model.txt + feature_map.json + label_map.json).",
+      "4. Only then, move to dt_backend/engines (indicators, feature_engineering) to ensure the feature shapes some models expect are actually produced."
+    ],
+    "style_and_constraints": [
+      "Do NOT remove existing functional behavior unless it is clearly broken.",
+      "Do NOT delete features or metrics you already rely on; only extend and harden them.",
+      "Code must be drop-in, ready-to-run; avoid placeholders.",
+      "Upgrades should support both offline backtests and live trading modes.",
+      "Keep human-trader-like behavior in mind: use context_state, regime_detector, and policy_engine to make decisions more adaptive than a static rule-based system."
+    ]
+  }
+}
