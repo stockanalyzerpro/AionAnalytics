@@ -1,0 +1,20 @@
+numpy<2.0.0
+evidently==0.4.27
+orjson
+aiohttp
+pyarrow
+lightgbm
+scikit-learn
+pandas
+fastapi
+uvicorn
+joblib
+pandas_ta
+yfinance
+pyarrow
+praw
+snscrape
+pandas-datareader
+fredapi
+tqdm
+transformers torch
