@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "description": "Historical intraday replay log",
+    "note": "Each entry will track a simulated historical trading day."
+  },
+  "days": []
+}

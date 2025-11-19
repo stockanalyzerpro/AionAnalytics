@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "source": "stockanalysis / polygon / alpaca (to be filled by fetchers)",
+    "note": "This file will be populated by ticker universe builder; it's a placeholder."
+  },
+  "tickers": []
+}

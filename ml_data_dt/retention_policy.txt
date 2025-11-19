@@ -1,0 +1,2 @@
+Intraday ML data retention: 180 days
+Folders under ml_data_dt/intraday/{dataset,predictions} should keep at most 180 days.

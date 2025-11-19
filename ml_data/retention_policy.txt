@@ -1,0 +1,2 @@
+Nightly ML data retention: 180 days
+Folders under ml_data/nightly/predictions/ should keep at most 180 days.

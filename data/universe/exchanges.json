@@ -1,0 +1,16 @@
+{
+  "exchanges": [
+    {
+      "code": "NYSE",
+      "name": "New York Stock Exchange"
+    },
+    {
+      "code": "NASDAQ",
+      "name": "NASDAQ"
+    },
+    {
+      "code": "ARCA",
+      "name": "NYSE Arca"
+    }
+  ]
+}
