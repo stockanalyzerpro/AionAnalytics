@@ -1,0 +1,1 @@
+export default function ModelsPage(){return (<div className='space-y-4'><h1 className='text-xl font-semibold'>Model Registry</h1><p className='text-slate-400'>Add a backend endpoint to stream ml_data/model_registry.jsonl and render here.</p></div>);}

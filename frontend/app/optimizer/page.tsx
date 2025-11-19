@@ -1,0 +1,1 @@
+export default function OptimizerPage(){return (<div className='space-y-6'><h1 className='text-xl font-semibold'>Optimizer</h1><p className='text-slate-400'>Run portfolio optimization and RL experiments.</p></div>);}

@@ -1,0 +1,1 @@
+export default function PredictPage(){return (<div className='space-y-6'><h1 className='text-xl font-semibold'>Predict</h1><p className='text-slate-400'>Interactive prediction coming soon — connect to your backend predict endpoint.</p></div>);}

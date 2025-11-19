@@ -1,0 +1,1 @@
+export default function PortfolioPage(){return (<div className='space-y-6'><h1 className='text-xl font-semibold'>Portfolio</h1><p className='text-slate-400'>Track and simulate strategies here.</p></div>);}
